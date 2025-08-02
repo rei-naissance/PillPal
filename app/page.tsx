@@ -44,6 +44,9 @@ export default function HomePage() {
     // Store symptoms in sessionStorage for the results page
     sessionStorage.setItem('symptoms', JSON.stringify(selectedSymptoms))
     
+    // Clear any cached results to ensure fresh analysis
+    sessionStorage.removeItem('diseaseResults')
+    
     // Navigate to results page
     router.push('/results')
   }

@@ -20,8 +20,51 @@ export default function ResultsPage() {
 
     const symptomsArray = JSON.parse(storedSymptoms)
     setSymptoms(symptomsArray)
-    analyzeSymptons(symptomsArray)
+    
+    // Check if we already have cached results
+    const cachedResults = sessionStorage.getItem('diseaseResults')
+    if (cachedResults) {
+      // Use cached results instead of calling API again
+      const cachedDiseases = JSON.parse(cachedResults)
+      setDiseases(cachedDiseases)
+      setIsLoading(false)
+    } else {
+      // Only call API if no cached results exist
+      analyzeSymptons(symptomsArray)
+    }
   }, [router])
+
+  const preloadTreatmentData = async (diseases: string[]) => {
+    // Preload treatment data for all diseases in the background
+    const treatmentPromises = diseases.map(async (disease) => {
+      try {
+        const response = await fetch('/api/analyze', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            disease,
+            type: 'treatments'
+          }),
+        })
+
+        if (response.ok) {
+          const data = await response.json()
+          if (data.treatments) {
+            // Cache treatment data for this disease
+            sessionStorage.setItem(`treatments_${disease}`, JSON.stringify(data.treatments))
+          }
+        }
+      } catch (error) {
+        // Silently fail for preloading - user can still get data when they click
+        console.log(`Failed to preload treatments for ${disease}:`, error)
+      }
+    })
+
+    // Execute all preload requests in parallel (don't await - run in background)
+    Promise.allSettled(treatmentPromises)
+  }
 
   const analyzeSymptons = async (symptoms: string[]) => {
     try {
@@ -49,18 +92,30 @@ export default function ResultsPage() {
         throw new Error(data.error)
       }
 
-      setDiseases(data.diseases || [])
+      const diseases = data.diseases || []
+      setDiseases(diseases)
+      // Cache the results for future navigation
+      sessionStorage.setItem('diseaseResults', JSON.stringify(diseases))
+      
+      // Preload treatment data for all diseases
+      preloadTreatmentData(diseases)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
       // Fallback diseases for demo purposes
-      setDiseases([
+      const fallbackDiseases = [
         'Common Cold',
         'Influenza (Flu)',
         'Migraine',
         'Tension Headache',
         'Gastroenteritis',
         'Sinusitis'
-      ])
+      ]
+      setDiseases(fallbackDiseases)
+      // Cache the fallback results too
+      sessionStorage.setItem('diseaseResults', JSON.stringify(fallbackDiseases))
+      
+      // Preload treatment data for fallback diseases too
+      preloadTreatmentData(fallbackDiseases)
     } finally {
       setIsLoading(false)
     }

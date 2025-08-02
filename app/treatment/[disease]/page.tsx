@@ -31,7 +31,18 @@ export default function TreatmentPage() {
 
     const decodedDisease = decodeURIComponent(diseaseParam)
     setDisease(decodedDisease)
-    fetchTreatments(decodedDisease)
+    
+    // Check if we have cached treatment data first
+    const cachedTreatments = sessionStorage.getItem(`treatments_${decodedDisease}`)
+    if (cachedTreatments) {
+      // Use cached data for instant loading
+      const treatmentData = JSON.parse(cachedTreatments)
+      setTreatments(treatmentData)
+      setIsLoading(false)
+    } else {
+      // Fetch from API if no cached data
+      fetchTreatments(decodedDisease)
+    }
   }, [params.disease, router])
 
   const fetchTreatments = async (diseaseName: string) => {
@@ -60,15 +71,18 @@ export default function TreatmentPage() {
         throw new Error(data.error)
       }
 
-      setTreatments(data.treatments || {
+      const treatmentData = data.treatments || {
         otc: [],
         prescription: [],
         home: []
-      })
+      }
+      setTreatments(treatmentData)
+      // Cache the treatment data for future instant access
+      sessionStorage.setItem(`treatments_${diseaseName}`, JSON.stringify(treatmentData))
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
       // Fallback treatments for demo purposes
-      setTreatments({
+      const fallbackTreatments = {
         otc: [
           'Ibuprofen (Advil, Motrin)',
           'Acetaminophen (Tylenol)',
@@ -95,7 +109,10 @@ export default function TreatmentPage() {
           'Eat nutritious foods',
           'Avoid smoking and alcohol'
         ]
-      })
+      }
+      setTreatments(fallbackTreatments)
+      // Cache the fallback treatments too
+      sessionStorage.setItem(`treatments_${diseaseName}`, JSON.stringify(fallbackTreatments))
     } finally {
       setIsLoading(false)
     }
