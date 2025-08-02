@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: system-ui, sans-serif;
+  }
+  
+  body {
+    @apply bg-white text-gray-900;
+  }
+}
+
+@layer components {
+  .symptom-tag {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-healthcare-light text-healthcare-dark border border-healthcare-blue/20 hover:bg-healthcare-blue hover:text-white transition-colors cursor-pointer;
+  }
+  
+  .symptom-tag.selected {
+    @apply bg-healthcare-blue text-white;
+  }
+  
+  .btn-primary {
+    @apply bg-healthcare-blue hover:bg-healthcare-dark text-white font-semibold py-3 px-6 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-healthcare-blue focus:ring-offset-2;
+  }
+  
+  .btn-secondary {
+    @apply bg-white hover:bg-gray-50 text-healthcare-blue border border-healthcare-blue font-semibold py-2 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-healthcare-blue focus:ring-offset-2;
+  }
+  
+  .disease-card {
+    @apply bg-white border border-gray-200 rounded-lg p-4 hover:border-healthcare-blue hover:shadow-md transition-all cursor-pointer;
+  }
+  
+  .treatment-section {
+    @apply bg-white rounded-lg border border-gray-200 p-6;
+  }
+}
