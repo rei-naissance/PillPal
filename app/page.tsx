@@ -5,10 +5,17 @@ import { useRouter } from 'next/navigation'
 import { Search, Plus, X } from 'lucide-react'
 
 const PREDEFINED_SYMPTOMS = [
-  'Headache', 'Fever', 'Cough', 'Sore Throat', 'Nausea', 'Fatigue', 
+  'Headache', 'Fever', 'Cough', 'Sore Throat', 'Nausea', 'Fatigue',
   'Dizziness', 'Chest Pain', 'Shortness of Breath', 'Stomach Pain',
   'Muscle Aches', 'Runny Nose', 'Sneezing', 'Vomiting', 'Diarrhea',
-  'Joint Pain', 'Back Pain', 'Rash', 'Itching', 'Swelling'
+  'Joint Pain', 'Back Pain', 'Rash', 'Itching', 'Swelling',
+  'Loss of Appetite', 'Chills', 'Sweating', 'Blurred Vision', 'Earache',
+  'Palpitations', 'Weight Loss', 'Weight Gain', 'Insomnia', 'Anxiety',
+  'Depression', 'Constipation', 'Heartburn', 'Frequent Urination', 'Burning Sensation',
+  'Numbness', 'Tingling', 'Difficulty Swallowing', 'Hoarseness', 'Wheezing',
+  'Bloody Nose', 'Bruising', 'Hair Loss', 'Night Sweats', 'Yellow Skin/Eyes',
+  'Cold Hands/Feet', 'Swollen Glands', 'Red Eyes', 'Dry Mouth', 'Mouth Ulcers',
+  'Loss of Taste', 'Loss of Smell', 'Hearing Loss', 'Light Sensitivity', 'Dark Urine'
 ]
 
 export default function HomePage() {
