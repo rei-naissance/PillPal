@@ -125,21 +125,17 @@ export default function HomePage() {
         <div className="mb-8">
           <h3 className="text-sm font-medium text-gray-700 mb-3">Common symptoms:</h3>
           <div className="flex flex-wrap gap-2">
-            {PREDEFINED_SYMPTOMS.map((symptom) => {
-              const isSelected = selectedSymptoms.includes(symptom)
-              return (
-                <button
-                  key={symptom}
-                  onClick={() => toggleSymptom(symptom)}
-                  className={`symptom-tag ${
-                    isSelected ? 'selected' : ''
-                  }`}
-                  aria-pressed={isSelected}
-                >
-                  {symptom}
-                </button>
-              )
-            })}
+            {PREDEFINED_SYMPTOMS.map((symptom) => (
+              <button
+                key={symptom}
+                onClick={() => toggleSymptom(symptom)}
+                className={`symptom-tag ${
+                  selectedSymptoms.includes(symptom) ? 'selected' : ''
+                }`}
+              >
+                {symptom}
+              </button>
+            ))}
           </div>
         </div>
 
