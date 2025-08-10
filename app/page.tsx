@@ -62,8 +62,8 @@ export default function HomePage() {
     <div className="max-w-4xl mx-auto">
       {/* Header */}
       <div className="text-center mb-12">
-        <h1 className="text-5xl font-bold text-healthcare-dark mb-4">
-          PillPal💊
+        <h1 className="text-8xl font-bold text-healthcare-dark mb-4">
+          💊PillPal🧑🏻‍⚕️
         </h1>
         <p className="text-xl text-gray-600 max-w-2xl mx-auto">
           AI-powered healthcare assistant to help you understand your symptoms and explore possible treatments
