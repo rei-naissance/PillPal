@@ -1,42 +1,58 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Search, Plus, X } from 'lucide-react'
+import {
+  Search,
+  X,
+  Activity,
+  History,
+  Sparkles,
+  ArrowRight,
+  Command,
+  TrendingUp,
+  ThermometerSun,
+  Pill
+} from 'lucide-react'
 
-const PREDEFINED_SYMPTOMS = [
+// Mock Data for "Trending" or "Categories"
+const TRENDING_SYMPTOMS = [
+  { id: 't1', text: 'Viral Fever', icon: ThermometerSun, color: 'text-orange-500', bg: 'bg-orange-50' },
+  { id: 't2', text: 'Seasonal Flu', icon: Activity, color: 'text-blue-500', bg: 'bg-blue-50' },
+  { id: 't3', text: 'Migraine', icon: Sparkles, color: 'text-purple-500', bg: 'bg-purple-50' },
+]
+
+const RECENT_SEARCHES = [
+  'Headache', 'Nausea'
+]
+
+const ALL_SYMPTOMS = [
   'Headache', 'Fever', 'Cough', 'Sore Throat', 'Nausea', 'Fatigue',
   'Dizziness', 'Chest Pain', 'Shortness of Breath', 'Stomach Pain',
   'Muscle Aches', 'Runny Nose', 'Sneezing', 'Vomiting', 'Diarrhea',
-  'Joint Pain', 'Back Pain', 'Rash', 'Itching', 'Swelling',
-  'Loss of Appetite', 'Chills', 'Sweating', 'Blurred Vision', 'Earache',
-  'Palpitations', 'Weight Loss', 'Weight Gain', 'Insomnia', 'Anxiety',
-  'Depression', 'Constipation', 'Heartburn', 'Frequent Urination', 'Burning Sensation',
-  'Numbness', 'Tingling', 'Difficulty Swallowing', 'Hoarseness', 'Wheezing',
-  'Bloody Nose', 'Bruising', 'Hair Loss', 'Night Sweats', 'Yellow Skin/Eyes',
-  'Cold Hands/Feet', 'Swollen Glands', 'Red Eyes', 'Dry Mouth', 'Mouth Ulcers',
-  'Loss of Taste', 'Loss of Smell', 'Hearing Loss', 'Light Sensitivity', 'Dark Urine'
+  'Joint Pain', 'Back Pain', 'Rash', 'Itching', 'Swelling'
 ]
 
 export default function HomePage() {
+  const [query, setQuery] = useState('')
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([])
-  const [customSymptom, setCustomSymptom] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+  const [isFocused, setIsFocused] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
 
+  // Filter symptoms based on query
+  const filteredSymptoms = ALL_SYMPTOMS.filter(s =>
+    s.toLowerCase().includes(query.toLowerCase()) && !selectedSymptoms.includes(s)
+  ).slice(0, 5)
+
   const toggleSymptom = (symptom: string) => {
-    setSelectedSymptoms(prev => 
-      prev.includes(symptom) 
+    setSelectedSymptoms(prev =>
+      prev.includes(symptom)
         ? prev.filter(s => s !== symptom)
         : [...prev, symptom]
     )
-  }
-
-  const addCustomSymptom = () => {
-    if (customSymptom.trim() && !selectedSymptoms.includes(customSymptom.trim())) {
-      setSelectedSymptoms(prev => [...prev, customSymptom.trim()])
-      setCustomSymptom('')
-    }
+    setQuery('')
+    inputRef.current?.focus()
   }
 
   const removeSymptom = (symptom: string) => {
@@ -45,146 +61,218 @@ export default function HomePage() {
 
   const handleSubmit = async () => {
     if (selectedSymptoms.length === 0) return
-    
-    setIsLoading(true)
-    
+
     // Store symptoms in sessionStorage for the results page
     sessionStorage.setItem('symptoms', JSON.stringify(selectedSymptoms))
-    
-    // Clear any cached results to ensure fresh analysis
     sessionStorage.removeItem('diseaseResults')
-    
-    // Navigate to results page
     router.push('/results')
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
-      {/* Header */}
-      <div className="text-center mb-12">
-        <h1 className="text-8xl font-bold text-healthcare-dark mb-4">
-          💊PillPal🧑🏻‍⚕️
-        </h1>
-        <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-          AI-powered healthcare assistant to help you understand your symptoms and explore possible treatments
-        </p>
-      </div>
+    <div className="min-h-[85vh] flex flex-col items-center justify-center relative">
 
-      {/* Symptom Input Section */}
-      <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
-        <h2 className="text-2xl font-semibold text-gray-900 mb-6">
-          Enter your symptoms:
-        </h2>
+      {/* Main Content Container */}
+      <div className="w-full max-w-2xl px-6 relative z-10 transition-all duration-500 ease-out">
 
-        {/* Selected Symptoms */}
-        {selectedSymptoms.length > 0 && (
-          <div className="mb-6">
-            <h3 className="text-sm font-medium text-gray-700 mb-3">Selected symptoms:</h3>
-            <div className="flex flex-wrap gap-2">
-              {selectedSymptoms.map((symptom) => (
-                <div
-                  key={symptom}
-                  className="symptom-tag selected group"
-                >
-                  {symptom}
+        {/* Header / Logo Area */}
+        <div className="text-center mb-12 space-y-4">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-zinc-900 text-white mb-4 shadow-xl">
+            <Pill className="w-6 h-6" />
+          </div>
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900">
+            What's troubling you?
+          </h1>
+          <p className="text-lg text-gray-500 font-medium">
+            Describe your symptoms to find clarity.
+          </p>
+        </div>
+
+        {/* Search Container */}
+        <div
+          className={`
+            group relative bg-white rounded-3xl transition-all duration-300 ease-out
+            ${isFocused || query ? 'shadow-2xl ring-2 ring-zinc-900/10 scale-[1.02]' : 'shadow-xl hover:shadow-2xl ring-1 ring-black/5'}
+          `}
+        >
+          {/* Input Area */}
+          <div className="relative flex items-center p-2">
+            <div className="pl-4 pr-3 text-gray-400">
+              <Search className={`w-6 h-6 transition-colors ${isFocused ? 'text-zinc-900' : ''}`} />
+            </div>
+
+            <div className="flex-1 flex flex-wrap items-center gap-2 min-h-[3.5rem] py-1">
+              {selectedSymptoms.map(s => (
+                <span key={s} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-zinc-100 text-zinc-800 text-sm font-medium animate-in fade-in zoom-in-95 duration-200">
+                  {s}
                   <button
-                    onClick={() => removeSymptom(symptom)}
-                    className="ml-2 opacity-70 hover:opacity-100"
+                    onClick={(e) => { e.stopPropagation(); removeSymptom(s); }}
+                    className="p-0.5 hover:bg-zinc-200 rounded-md transition-colors"
                   >
-                    <X size={14} />
+                    <X className="w-3 h-3" />
                   </button>
-                </div>
+                </span>
               ))}
+              <input
+                ref={inputRef}
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setTimeout(() => setIsFocused(false), 200)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && query) {
+                    toggleSymptom(query)
+                  } else if (e.key === 'Backspace' && !query && selectedSymptoms.length > 0) {
+                    removeSymptom(selectedSymptoms[selectedSymptoms.length - 1])
+                  } else if (e.key === 'Enter' && !query && selectedSymptoms.length > 0) {
+                    handleSubmit()
+                  }
+                }}
+                placeholder={selectedSymptoms.length === 0 ? "Type a symptom like 'Headache'..." : "Add another..."}
+                className="flex-1 min-w-[120px] bg-transparent border-none outline-none text-lg text-gray-900 placeholder:text-gray-400 h-full"
+                autoComplete="off"
+              />
+            </div>
+
+            {selectedSymptoms.length > 0 && (
+              <button
+                onClick={handleSubmit}
+                className="ml-2 p-3 bg-zinc-900 hover:bg-black text-white rounded-2xl transition-all hover:scale-105 active:scale-95 shadow-lg"
+              >
+                <ArrowRight className="w-5 h-5" />
+              </button>
+            )}
+          </div>
+
+          {/* Autocomplete / Suggestions Dropdown */}
+          <div
+            className={`
+              overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)]
+              ${(isFocused || query) ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'}
+            `}
+          >
+            <div className="px-2 pb-2">
+              <div className="h-px bg-gray-100 mx-2 mb-2" />
+
+              {query ? (
+                // Search Results
+                <div className="p-1 max-h-[300px] overflow-y-auto">
+                  <div className="text-xs font-semibold text-gray-400 px-3 py-2 uppercase tracking-wider">
+                    Suggestions
+                  </div>
+                  {filteredSymptoms.length > 0 ? filteredSymptoms.map(s => (
+                    <button
+                      key={s}
+                      onClick={() => toggleSymptom(s)}
+                      className="w-full flex items-center justify-between px-3 py-3 rounded-xl hover:bg-gray-50 text-left transition-colors group"
+                    >
+                      <span className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 group-hover:bg-white group-hover:shadow-sm transition-all">
+                          <PlusIcon />
+                        </div>
+                        <span className="font-medium text-gray-700 group-hover:text-gray-900">{s}</span>
+                      </span>
+                      <span className="text-gray-300 group-hover:text-zinc-400">
+                        <Command className="w-3.5 h-3.5" />
+                      </span>
+                    </button>
+                  )) : (
+                    <button
+                      onClick={() => toggleSymptom(query)}
+                      className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-50 text-left transition-colors"
+                    >
+                      <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500">
+                        <PlusIcon />
+                      </div>
+                      <span className="font-medium text-gray-700">Add "{query}"</span>
+                    </button>
+                  )}
+                </div>
+              ) : (
+                // Default State (History & Trending)
+                <div className="p-1">
+                  {/* Recent Searches (Mocked) */}
+                  <div className="mb-2">
+                    <div className="text-xs font-semibold text-gray-400 px-3 py-2 uppercase tracking-wider">
+                      Recent
+                    </div>
+                    {RECENT_SEARCHES.map(s => (
+                      !selectedSymptoms.includes(s) && (
+                        <button
+                          key={s}
+                          onClick={() => toggleSymptom(s)}
+                          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 text-left transition-colors group"
+                        >
+                          <History className="w-4 h-4 text-gray-400 group-hover:text-gray-600" />
+                          <span className="font-medium text-gray-600 group-hover:text-gray-900">{s}</span>
+                        </button>
+                      )
+                    ))}
+                  </div>
+
+                  {/* Common Symptoms Grid */}
+                  <div className="mb-2">
+                    <div className="text-xs font-semibold text-gray-400 px-3 py-2 uppercase tracking-wider">
+                      Common Symptoms
+                    </div>
+                    <div className="flex flex-wrap gap-2 px-3 py-1">
+                      {ALL_SYMPTOMS.slice(0, 12).map(s => (
+                        !selectedSymptoms.includes(s) && (
+                          <button
+                            key={s}
+                            onClick={() => toggleSymptom(s)}
+                            className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-gray-50 text-gray-600 hover:bg-zinc-900 hover:text-white transition-all duration-200"
+                          >
+                            {s}
+                          </button>
+                        )
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Trending/Categories */}
+                  <div>
+                    <div className="text-xs font-semibold text-gray-400 px-3 py-2 uppercase tracking-wider">
+                      Trending Now
+                    </div>
+                    {TRENDING_SYMPTOMS.map(item => (
+                      <button
+                        key={item.id}
+                        onClick={() => toggleSymptom(item.text)}
+                        className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-gray-50 text-left transition-colors group"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={`w-2 h-2 rounded-full ${item.color.replace('text', 'bg')}`} />
+                          <span className="font-medium text-gray-700">{item.text}</span>
+                        </div>
+                        <TrendingUp className="w-3.5 h-3.5 text-gray-300 group-hover:text-gray-500" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
-        )}
-
-        {/* Custom Symptom Input */}
-        <div className="mb-6">
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={customSymptom}
-              onChange={(e) => setCustomSymptom(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && addCustomSymptom()}
-              placeholder="Type a custom symptom..."
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-healthcare-blue focus:border-transparent"
-            />
-            <button
-              onClick={addCustomSymptom}
-              disabled={!customSymptom.trim()}
-              className="btn-secondary flex items-center gap-2"
-            >
-              <Plus size={16} />
-              Add
-            </button>
-          </div>
         </div>
 
-        {/* Predefined Symptoms */}
-        <div className="mb-8">
-          <h3 className="text-sm font-medium text-gray-700 mb-3">Common symptoms:</h3>
-          <div className="flex flex-wrap gap-2">
-            {PREDEFINED_SYMPTOMS.map((symptom) => (
-              <button
-                key={symptom}
-                onClick={() => toggleSymptom(symptom)}
-                className={`symptom-tag ${
-                  selectedSymptoms.includes(symptom) ? 'selected' : ''
-                }`}
-              >
-                {symptom}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Submit Button */}
-        <div className="text-center">
-          <button
-            onClick={handleSubmit}
-            disabled={selectedSymptoms.length === 0 || isLoading}
-            className="btn-primary text-lg px-8 py-4 flex items-center gap-3 mx-auto disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading ? (
-              <>
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                Analyzing...
-              </>
-            ) : (
-              <>
-                <Search size={20} />
-                Find Possible Conditions
-              </>
-            )}
-          </button>
-        </div>
-      </div>
-
-      {/* Info Cards */}
-      <div className="grid md:grid-cols-3 gap-6">
-        <div className="bg-white rounded-lg p-6 text-center">
-          <div className="text-3xl mb-3">🔍</div>
-          <h3 className="font-semibold text-gray-900 mb-2">Symptom Analysis</h3>
-          <p className="text-gray-600 text-sm">
-            Advanced AI analyzes your symptoms to suggest possible conditions
+        {/* Footer Text */}
+        <div className="mt-8 text-center">
+          <p className="text-sm text-gray-400 flex items-center justify-center gap-2">
+            <Command className="w-3 h-3" />
+            <span>Press <kbd className="font-sans font-semibold text-gray-500">Enter</kbd> to search</span>
           </p>
         </div>
-        <div className="bg-white rounded-lg p-6 text-center">
-          <div className="text-3xl mb-3">💊</div>
-          <h3 className="font-semibold text-gray-900 mb-2">Treatment Options</h3>
-          <p className="text-gray-600 text-sm">
-            Get suggestions for OTC medications, prescriptions, and home remedies
-          </p>
-        </div>
-        <div className="bg-white rounded-lg p-6 text-center">
-          <div className="text-3xl mb-3">⚕️</div>
-          <h3 className="font-semibold text-gray-900 mb-2">Professional Guidance</h3>
-          <p className="text-gray-600 text-sm">
-            Always consult healthcare professionals for proper diagnosis
-          </p>
-        </div>
+
       </div>
     </div>
+  )
+}
+
+function PlusIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="12" y1="5" x2="12" y2="19"></line>
+      <line x1="5" y1="12" x2="19" y2="12"></line>
+    </svg>
   )
 }
