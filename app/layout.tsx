@@ -1,7 +1,5 @@
 import type { Metadata } from 'next'
 import './globals.css'
-import './globals.css'
-import './globals.css'
 
 export const metadata: Metadata = {
   title: 'PillPal - Healthcare Assistant',
