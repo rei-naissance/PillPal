@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import Preloader from './components/Preloader'
 
 export const metadata: Metadata = {
   title: 'PillPal - Healthcare Assistant',
@@ -14,6 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen bg-gray-50" suppressHydrationWarning={true}>
+        <Preloader />
         <main className="container mx-auto px-4 py-8 max-w-6xl">
           {children}
         </main>
