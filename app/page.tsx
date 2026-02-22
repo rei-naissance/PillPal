@@ -38,6 +38,7 @@ export default function HomePage() {
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([])
   const [isFocused, setIsFocused] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+  const focusTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const router = useRouter()
 
   // Filter symptoms based on query
@@ -57,6 +58,7 @@ export default function HomePage() {
 
   const removeSymptom = (symptom: string) => {
     setSelectedSymptoms(prev => prev.filter(s => s !== symptom))
+    inputRef.current?.focus()
   }
 
   const handleSubmit = async () => {
@@ -117,8 +119,13 @@ export default function HomePage() {
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                onFocus={() => setIsFocused(true)}
-                onBlur={() => setTimeout(() => setIsFocused(false), 200)}
+                onFocus={() => {
+                  if (focusTimeoutRef.current) clearTimeout(focusTimeoutRef.current)
+                  setIsFocused(true)
+                }}
+                onBlur={() => {
+                  focusTimeoutRef.current = setTimeout(() => setIsFocused(false), 200)
+                }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && query) {
                     toggleSymptom(query)
@@ -150,6 +157,7 @@ export default function HomePage() {
               overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)]
               ${(isFocused || query) ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'}
             `}
+            onMouseDown={(e) => e.preventDefault()}
           >
             <div className="px-2 pb-2">
               <div className="h-px bg-gray-100 mx-2 mb-2" />
