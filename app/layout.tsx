@@ -16,7 +16,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="min-h-screen bg-gray-50" suppressHydrationWarning={true}>
         <Preloader />
-        <main className="container mx-auto px-4 py-8 max-w-6xl">
+        <main className="container mx-auto px-4 py-8 max-w-6xl pb-36 sm:pb-24">
           {children}
         </main>
         <div className="fixed bottom-6 left-0 right-0 flex justify-center pointer-events-none z-50">

@@ -139,13 +139,13 @@ export default function TreatmentPage() {
   }
 
   return (
-    <main className="max-w-6xl mx-auto flex flex-col min-h-screen pb-24">
+    <div className="max-w-6xl mx-auto flex flex-col pt-2 md:pt-4">
       {/* Header */}
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 pt-4">
-        <div className="flex items-center gap-6">
+        <div className="flex items-start sm:items-center gap-4 sm:gap-6 mt-2 md:mt-0">
           <button
             onClick={handleBack}
-            className="w-12 h-12 flex items-center justify-center rounded-2xl bg-white border border-gray-200 shadow-sm hover:shadow-md hover:bg-gray-50 transition-all text-gray-700 flex-shrink-0"
+            className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-2xl bg-white border border-gray-200 shadow-sm hover:shadow-md hover:bg-gray-50 transition-all text-gray-700 flex-shrink-0"
             aria-label="Back to Results"
           >
             <ArrowLeft size={20} />
@@ -161,16 +161,16 @@ export default function TreatmentPage() {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center w-full sm:w-auto gap-3">
           <button
             onClick={() => router.push('/')}
-            className="px-6 py-3 rounded-2xl bg-white border border-gray-200 shadow-sm hover:shadow-md text-gray-700 font-medium transition-all"
+            className="px-6 py-3 rounded-2xl bg-white border border-gray-200 shadow-sm hover:shadow-md text-gray-700 font-medium transition-all w-full sm:w-auto text-center"
           >
             New Analysis
           </button>
           <button
             onClick={handleBack}
-            className="px-6 py-3 rounded-2xl bg-zinc-900 hover:bg-black text-white shadow-lg hover:shadow-xl hover:-translate-y-0.5 font-medium transition-all"
+            className="px-6 py-3 rounded-2xl bg-zinc-900 hover:bg-black text-white shadow-lg hover:shadow-xl hover:-translate-y-0.5 font-medium transition-all w-full sm:w-auto text-center"
           >
             Other Conditions
           </button>
@@ -208,7 +208,7 @@ export default function TreatmentPage() {
             </div>
           </header>
 
-          <ul className="space-y-4 flex-1 overflow-y-auto pr-4 -mr-2 max-h-[400px]" style={{ scrollbarWidth: 'thin', scrollbarColor: '#E5E7EB transparent' }}>
+          <ul className="space-y-4 flex-1 lg:overflow-y-auto lg:pr-4 lg:-mr-2 lg:max-h-[500px]" style={{ scrollbarWidth: 'thin', scrollbarColor: '#E5E7EB transparent' }}>
             {treatments.otc.length > 0 ? (
               treatments.otc.map((medication, index) => (
                 <li key={index} className="flex items-start gap-4 p-3 rounded-2xl hover:bg-gray-50 transition-colors">
@@ -247,7 +247,7 @@ export default function TreatmentPage() {
             </div>
           </header>
 
-          <ul className="space-y-4 flex-1 overflow-y-auto pr-4 -mr-2 max-h-[400px]" style={{ scrollbarWidth: 'thin', scrollbarColor: '#E5E7EB transparent' }}>
+          <ul className="space-y-4 flex-1 lg:overflow-y-auto lg:pr-4 lg:-mr-2 lg:max-h-[500px]" style={{ scrollbarWidth: 'thin', scrollbarColor: '#E5E7EB transparent' }}>
             {treatments.prescription.length > 0 ? (
               treatments.prescription.map((medication, index) => (
                 <li key={index} className="flex items-start gap-4 p-3 rounded-2xl hover:bg-gray-50 transition-colors">
@@ -286,7 +286,7 @@ export default function TreatmentPage() {
             </div>
           </header>
 
-          <ul className="space-y-4 flex-1 overflow-y-auto pr-4 -mr-2 max-h-[400px]" style={{ scrollbarWidth: 'thin', scrollbarColor: '#E5E7EB transparent' }}>
+          <ul className="space-y-4 flex-1 lg:overflow-y-auto lg:pr-4 lg:-mr-2 lg:max-h-[500px]" style={{ scrollbarWidth: 'thin', scrollbarColor: '#E5E7EB transparent' }}>
             {treatments.home.length > 0 ? (
               treatments.home.map((remedy, index) => (
                 <li key={index} className="flex items-start gap-4 p-3 rounded-2xl hover:bg-gray-50 transition-colors">
@@ -382,6 +382,6 @@ export default function TreatmentPage() {
           </div>
         </aside>
       </section>
-    </main>
+    </div>
   )
 }

@@ -185,14 +185,14 @@ export default function ResultsPage() {
       )}
 
       {/* Results */}
-      <section className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-gray-100/50 p-8 flex flex-col mb-8" style={{ maxHeight: 'calc(100vh - 280px)' }}>
+      <section className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-gray-100/50 p-6 md:p-8 flex flex-col mb-8 lg:max-h-[calc(100vh-280px)]">
         {diseases.length > 0 ? (
           <>
             <h2 className="text-2xl font-bold text-gray-900 mb-8 flex-shrink-0 flex items-center gap-4">
               <span className="w-8 h-8 rounded-xl bg-green-100 text-green-600 flex items-center justify-center text-sm shadow-sm">✓</span>
               Possible Matches
             </h2>
-            <ul className="flex-1 overflow-y-auto pr-4 -mr-4 pb-2 space-y-4" style={{ scrollbarWidth: 'thin', scrollbarColor: '#E5E7EB transparent' }} role="list">
+            <ul className="flex-1 lg:overflow-y-auto lg:pr-4 lg:-mr-4 pb-2 space-y-4" style={{ scrollbarWidth: 'thin', scrollbarColor: '#E5E7EB transparent' }} role="list">
               {diseases.map((disease, index) => (
                 <li key={index} className="list-none">
                   <button
