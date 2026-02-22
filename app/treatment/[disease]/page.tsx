@@ -208,7 +208,7 @@ export default function TreatmentPage() {
             </div>
           </header>
 
-          <ul className="space-y-4 flex-1">
+          <ul className="space-y-4 flex-1 overflow-y-auto pr-4 -mr-2 max-h-[400px]" style={{ scrollbarWidth: 'thin', scrollbarColor: '#E5E7EB transparent' }}>
             {treatments.otc.length > 0 ? (
               treatments.otc.map((medication, index) => (
                 <li key={index} className="flex items-start gap-4 p-3 rounded-2xl hover:bg-gray-50 transition-colors">
@@ -247,7 +247,7 @@ export default function TreatmentPage() {
             </div>
           </header>
 
-          <ul className="space-y-4 flex-1">
+          <ul className="space-y-4 flex-1 overflow-y-auto pr-4 -mr-2 max-h-[400px]" style={{ scrollbarWidth: 'thin', scrollbarColor: '#E5E7EB transparent' }}>
             {treatments.prescription.length > 0 ? (
               treatments.prescription.map((medication, index) => (
                 <li key={index} className="flex items-start gap-4 p-3 rounded-2xl hover:bg-gray-50 transition-colors">
@@ -286,7 +286,7 @@ export default function TreatmentPage() {
             </div>
           </header>
 
-          <ul className="space-y-4 flex-1">
+          <ul className="space-y-4 flex-1 overflow-y-auto pr-4 -mr-2 max-h-[400px]" style={{ scrollbarWidth: 'thin', scrollbarColor: '#E5E7EB transparent' }}>
             {treatments.home.length > 0 ? (
               treatments.home.map((remedy, index) => (
                 <li key={index} className="flex items-start gap-4 p-3 rounded-2xl hover:bg-gray-50 transition-colors">
