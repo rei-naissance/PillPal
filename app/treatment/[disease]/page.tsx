@@ -31,7 +31,7 @@ export default function TreatmentPage() {
 
     const decodedDisease = decodeURIComponent(diseaseParam)
     setDisease(decodedDisease)
-    
+
     // Check if we have cached treatment data first
     const cachedTreatments = sessionStorage.getItem(`treatments_${decodedDisease}`)
     if (cachedTreatments) {
@@ -66,7 +66,7 @@ export default function TreatmentPage() {
       }
 
       const data = await response.json()
-      
+
       if (data.error) {
         throw new Error(data.error)
       }
@@ -124,219 +124,264 @@ export default function TreatmentPage() {
 
   if (isLoading) {
     return (
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center py-16">
-          <Loader2 className="animate-spin h-12 w-12 text-healthcare-blue mx-auto mb-4" />
+      <main className="max-w-6xl mx-auto min-h-[60vh] flex flex-col items-center justify-center">
+        <section className="text-center py-16">
+          <Loader2 className="animate-spin h-12 w-12 text-zinc-900 mx-auto mb-4" />
           <h2 className="text-2xl font-semibold text-gray-900 mb-2">
             Finding treatment options...
           </h2>
           <p className="text-gray-600">
             Analyzing the best treatment approaches for {disease}
           </p>
-        </div>
-      </div>
+        </section>
+      </main>
     )
   }
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <main className="max-w-6xl mx-auto flex flex-col min-h-screen pb-24">
       {/* Header */}
-      <div className="flex items-center mb-8">
-        <button
-          onClick={handleBack}
-          className="btn-secondary flex items-center gap-2 mr-4"
-        >
-          <ArrowLeft size={16} />
-          Back to Results
-        </button>
-        <div>
-          <h1 className="text-3xl font-bold text-healthcare-dark">
-            Treatment Options
-          </h1>
-          <p className="text-gray-600 mt-1">
-            For: <span className="font-medium">{disease}</span>
-          </p>
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 pt-4">
+        <div className="flex items-center gap-6">
+          <button
+            onClick={handleBack}
+            className="w-12 h-12 flex items-center justify-center rounded-2xl bg-white border border-gray-200 shadow-sm hover:shadow-md hover:bg-gray-50 transition-all text-gray-700 flex-shrink-0"
+            aria-label="Back to Results"
+          >
+            <ArrowLeft size={20} />
+          </button>
+          <div>
+            <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 tracking-tight">
+              Treatment Options
+            </h1>
+            <p className="text-gray-500 mt-2 text-lg">
+              For: <span className="font-semibold text-gray-800">{disease}</span>
+            </p>
+          </div>
         </div>
-      </div>
+
+        {/* Action Buttons */}
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => router.push('/')}
+            className="px-6 py-3 rounded-2xl bg-white border border-gray-200 shadow-sm hover:shadow-md text-gray-700 font-medium transition-all"
+          >
+            New Analysis
+          </button>
+          <button
+            onClick={handleBack}
+            className="px-6 py-3 rounded-2xl bg-zinc-900 hover:bg-black text-white shadow-lg hover:shadow-xl hover:-translate-y-0.5 font-medium transition-all"
+          >
+            Other Conditions
+          </button>
+        </div>
+      </header>
 
       {/* Error Message */}
       {error && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6 flex items-start gap-3">
-          <AlertCircle className="text-yellow-600 mt-0.5" size={20} />
+        <aside className="bg-yellow-50 border border-yellow-200 rounded-2xl p-4 mb-8 flex items-start gap-4 shadow-sm" role="alert">
+          <AlertCircle className="text-yellow-600 mt-0" size={24} />
           <div>
-            <h3 className="font-medium text-yellow-800">Notice</h3>
-            <p className="text-yellow-700 text-sm mt-1">
+            <h3 className="font-medium text-yellow-800 text-lg">Notice</h3>
+            <p className="text-yellow-700 mt-1">
               {error}. Showing example treatments for demonstration.
             </p>
           </div>
-        </div>
+        </aside>
       )}
 
       {/* Treatment Sections */}
-      <div className="grid lg:grid-cols-3 gap-8 mb-8">
+      <section className="grid lg:grid-cols-3 gap-8 mb-8">
         {/* Over-the-Counter Medications */}
-        <div className="treatment-section">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <Pill className="text-green-600" size={24} />
+        <article className="bg-white/80 backdrop-blur-xl border border-gray-100 rounded-3xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 ring-1 ring-black/5 hover:ring-green-500/20 group flex flex-col">
+          <header className="flex items-center gap-4 mb-6">
+            <div className="w-14 h-14 rounded-2xl bg-green-50 flex items-center justify-center text-green-600 shadow-sm border border-green-100 group-hover:scale-110 group-hover:bg-green-100 transition-all duration-300">
+              <Pill size={28} />
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">
-                Over-the-Counter Medications
+              <h2 className="text-xl font-bold text-gray-900">
+                Over-the-Counter
               </h2>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-500 mt-1">
                 Available without prescription
               </p>
             </div>
-          </div>
-          
-          {treatments.otc.length > 0 ? (
-            <ul className="space-y-3">
-              {treatments.otc.map((medication, index) => (
-                <li key={index} className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                  <span className="text-gray-700">{medication}</span>
+          </header>
+
+          <ul className="space-y-4 flex-1">
+            {treatments.otc.length > 0 ? (
+              treatments.otc.map((medication, index) => (
+                <li key={index} className="flex items-start gap-4 p-3 rounded-2xl hover:bg-gray-50 transition-colors">
+                  <div className="w-8 h-8 rounded-xl bg-green-100/50 flex flex-shrink-0 items-center justify-center text-green-600 font-bold text-sm shadow-sm ring-1 ring-green-200">
+                    {index + 1}
+                  </div>
+                  <span className="text-gray-700 leading-relaxed font-medium mt-1">{medication}</span>
                 </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-gray-500 italic">No OTC medications found</p>
-          )}
-          
-          <div className="mt-4 p-3 bg-green-50 rounded-lg">
-            <p className="text-xs text-green-700">
-              💡 Always read labels and follow dosage instructions
+              ))
+            ) : (
+              <li className="text-gray-500 italic p-2">No OTC medications found</li>
+            )}
+          </ul>
+
+          <aside className="mt-6 p-4 bg-green-50 border border-green-100 rounded-2xl flex items-start gap-3">
+            <span className="text-xl">💡</span>
+            <p className="text-xs text-green-700 font-medium leading-relaxed pt-1">
+              Always read labels and follow dosage instructions
             </p>
-          </div>
-        </div>
+          </aside>
+        </article>
 
         {/* Prescription Medications */}
-        <div className="treatment-section">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Stethoscope className="text-blue-600" size={24} />
+        <article className="bg-white/80 backdrop-blur-xl border border-gray-100 rounded-3xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 ring-1 ring-black/5 hover:ring-blue-500/20 group flex flex-col">
+          <header className="flex items-center gap-4 mb-6">
+            <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 shadow-sm border border-blue-100 group-hover:scale-110 group-hover:bg-blue-100 transition-all duration-300">
+              <Stethoscope size={28} />
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">
-                Prescribed Medications
+              <h2 className="text-xl font-bold text-gray-900">
+                Prescribed
               </h2>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-500 mt-1">
                 Requires doctor's prescription
               </p>
             </div>
-          </div>
-          
-          {treatments.prescription.length > 0 ? (
-            <ul className="space-y-3">
-              {treatments.prescription.map((medication, index) => (
-                <li key={index} className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                  <span className="text-gray-700">{medication}</span>
+          </header>
+
+          <ul className="space-y-4 flex-1">
+            {treatments.prescription.length > 0 ? (
+              treatments.prescription.map((medication, index) => (
+                <li key={index} className="flex items-start gap-4 p-3 rounded-2xl hover:bg-gray-50 transition-colors">
+                  <div className="w-8 h-8 rounded-xl bg-blue-100/50 flex flex-shrink-0 items-center justify-center text-blue-600 font-bold text-sm shadow-sm ring-1 ring-blue-200">
+                    {index + 1}
+                  </div>
+                  <span className="text-gray-700 leading-relaxed font-medium mt-1">{medication}</span>
                 </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-gray-500 italic">No prescription medications found</p>
-          )}
-          
-          <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-            <p className="text-xs text-blue-700">
-              ⚠️ Consult your doctor before taking any prescription medication
+              ))
+            ) : (
+              <li className="text-gray-500 italic p-2">No prescription medications found</li>
+            )}
+          </ul>
+
+          <aside className="mt-6 p-4 bg-blue-50 border border-blue-100 rounded-2xl flex items-start gap-3">
+            <span className="text-xl">⚠️</span>
+            <p className="text-xs text-blue-700 font-medium leading-relaxed pt-1">
+              Consult your doctor before taking any prescription medication
             </p>
-          </div>
-        </div>
+          </aside>
+        </article>
 
         {/* Home Remedies */}
-        <div className="treatment-section">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 bg-orange-100 rounded-lg">
-              <Home className="text-orange-600" size={24} />
+        <article className="bg-white/80 backdrop-blur-xl border border-gray-100 rounded-3xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 ring-1 ring-black/5 hover:ring-orange-500/20 group flex flex-col">
+          <header className="flex items-center gap-4 mb-6">
+            <div className="w-14 h-14 rounded-2xl bg-orange-50 flex items-center justify-center text-orange-600 shadow-sm border border-orange-100 group-hover:scale-110 group-hover:bg-orange-100 transition-all duration-300">
+              <Home size={28} />
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">
+              <h2 className="text-xl font-bold text-gray-900">
                 Home Remedies
               </h2>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-500 mt-1">
                 Natural and supportive care
               </p>
             </div>
-          </div>
-          
-          {treatments.home.length > 0 ? (
-            <ul className="space-y-3">
-              {treatments.home.map((remedy, index) => (
-                <li key={index} className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-orange-500 rounded-full mt-2 flex-shrink-0"></div>
-                  <span className="text-gray-700">{remedy}</span>
+          </header>
+
+          <ul className="space-y-4 flex-1">
+            {treatments.home.length > 0 ? (
+              treatments.home.map((remedy, index) => (
+                <li key={index} className="flex items-start gap-4 p-3 rounded-2xl hover:bg-gray-50 transition-colors">
+                  <div className="w-8 h-8 rounded-xl bg-orange-100/50 flex flex-shrink-0 items-center justify-center text-orange-600 font-bold text-sm shadow-sm ring-1 ring-orange-200">
+                    {index + 1}
+                  </div>
+                  <span className="text-gray-700 leading-relaxed font-medium mt-1">{remedy}</span>
                 </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-gray-500 italic">No home remedies found</p>
-          )}
-          
-          <div className="mt-4 p-3 bg-orange-50 rounded-lg">
-            <p className="text-xs text-orange-700">
-              🏠 Complement medical treatment, don't replace it
+              ))
+            ) : (
+              <li className="text-gray-500 italic p-2">No home remedies found</li>
+            )}
+          </ul>
+
+          <aside className="mt-6 p-4 bg-orange-50 border border-orange-100 rounded-2xl flex items-start gap-3">
+            <span className="text-xl">🏠</span>
+            <p className="text-xs text-orange-700 font-medium leading-relaxed pt-1">
+              Complement medical treatment, don't replace it
             </p>
-          </div>
-        </div>
-      </div>
+          </aside>
+        </article>
+      </section>
 
       {/* Important Warnings */}
-      <div className="grid md:grid-cols-2 gap-6">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-          <div className="flex items-start gap-3">
-            <AlertCircle className="text-red-600 mt-0.5" size={20} />
+      <section className="grid md:grid-cols-2 gap-8 mb-8">
+        <aside className="bg-red-50/80 backdrop-blur-sm border border-red-200 rounded-3xl p-6 shadow-sm hover:shadow-md transition-shadow">
+          <div className="flex items-start gap-4">
+            <div className="p-3 bg-red-100 text-red-600 rounded-2xl shadow-inner border border-red-200 flex-shrink-0">
+              <AlertCircle size={28} />
+            </div>
             <div>
-              <h3 className="font-semibold text-red-800 mb-2">
+              <h3 className="font-bold text-red-900 mb-4 text-lg">
                 Seek Immediate Medical Attention If:
               </h3>
-              <ul className="text-red-700 text-sm space-y-1">
-                <li>• Symptoms worsen or persist</li>
-                <li>• You experience severe pain</li>
-                <li>• You have difficulty breathing</li>
-                <li>• You develop a high fever</li>
-                <li>• You have allergic reactions</li>
+              <ul className="text-red-800 text-sm space-y-3 font-medium">
+                <li className="flex items-center gap-3">
+                  <span className="w-2 h-2 rounded-full bg-red-400"></span>
+                  Symptoms worsen or persist
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="w-2 h-2 rounded-full bg-red-400"></span>
+                  You experience severe pain
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="w-2 h-2 rounded-full bg-red-400"></span>
+                  You have difficulty breathing
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="w-2 h-2 rounded-full bg-red-400"></span>
+                  You develop a high fever
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="w-2 h-2 rounded-full bg-red-400"></span>
+                  You have allergic reactions
+                </li>
               </ul>
             </div>
           </div>
-        </div>
+        </aside>
 
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-          <div className="flex items-start gap-3">
-            <Stethoscope className="text-blue-600 mt-0.5" size={20} />
+        <aside className="bg-blue-50/80 backdrop-blur-sm border border-blue-200 rounded-3xl p-6 shadow-sm hover:shadow-md transition-shadow">
+          <div className="flex items-start gap-4">
+            <div className="p-3 bg-blue-100 text-blue-600 rounded-2xl shadow-inner border border-blue-200 flex-shrink-0">
+              <Stethoscope size={28} />
+            </div>
             <div>
-              <h3 className="font-semibold text-blue-800 mb-2">
+              <h3 className="font-bold text-blue-900 mb-4 text-lg">
                 Before Taking Any Medication:
               </h3>
-              <ul className="text-blue-700 text-sm space-y-1">
-                <li>• Consult with a healthcare provider</li>
-                <li>• Check for drug interactions</li>
-                <li>• Consider your medical history</li>
-                <li>• Follow proper dosage guidelines</li>
-                <li>• Monitor for side effects</li>
+              <ul className="text-blue-800 text-sm space-y-3 font-medium">
+                <li className="flex items-center gap-3">
+                  <span className="w-2 h-2 rounded-full bg-blue-400"></span>
+                  Consult with a healthcare provider
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="w-2 h-2 rounded-full bg-blue-400"></span>
+                  Check for drug interactions
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="w-2 h-2 rounded-full bg-blue-400"></span>
+                  Consider your medical history
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="w-2 h-2 rounded-full bg-blue-400"></span>
+                  Follow proper dosage guidelines
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="w-2 h-2 rounded-full bg-blue-400"></span>
+                  Monitor for side effects
+                </li>
               </ul>
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Action Buttons */}
-      <div className="flex justify-center gap-4 mt-8">
-        <button
-          onClick={() => router.push('/')}
-          className="btn-secondary"
-        >
-          Start New Analysis
-        </button>
-        <button
-          onClick={handleBack}
-          className="btn-primary"
-        >
-          View Other Conditions
-        </button>
-      </div>
-    </div>
+        </aside>
+      </section>
+    </main>
   )
 }
