@@ -66,18 +66,17 @@ export default function HomePage() {
 
     // Store symptoms in sessionStorage for the results page
     sessionStorage.setItem('symptoms', JSON.stringify(selectedSymptoms))
-    sessionStorage.removeItem('diseaseResults')
     router.push('/results')
   }
 
   return (
-    <div className="min-h-[85vh] flex flex-col items-center justify-center relative">
+    <main className="min-h-[85vh] flex flex-col items-center justify-center relative">
 
       {/* Main Content Container */}
-      <div className="w-full max-w-2xl px-6 relative z-10 transition-all duration-500 ease-out">
+      <section className="w-full max-w-2xl px-6 relative z-10 transition-all duration-500 ease-out">
 
         {/* Header / Logo Area */}
-        <div className="text-center mb-12 space-y-4">
+        <header className="text-center mb-12 space-y-4">
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-zinc-900 text-white mb-4 shadow-xl">
             <Pill className="w-6 h-6" />
           </div>
@@ -87,7 +86,7 @@ export default function HomePage() {
           <p className="text-lg text-gray-500 font-medium">
             Describe your symptoms to find clarity.
           </p>
-        </div>
+        </header>
 
         {/* Search Container */}
         <div
@@ -102,15 +101,15 @@ export default function HomePage() {
               <Search className={`w-6 h-6 transition-colors ${isFocused ? 'text-zinc-900' : ''}`} />
             </div>
 
-            <div className="flex-1 flex flex-wrap items-center gap-2 min-h-[3.5rem] py-1">
+            <div className="flex-1 flex flex-wrap items-center gap-2 min-h-[3.5rem] py-2">
               {selectedSymptoms.map(s => (
-                <span key={s} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-zinc-100 text-zinc-800 text-sm font-medium animate-in fade-in zoom-in-95 duration-200">
+                <span key={s} className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-zinc-100 text-zinc-800 text-sm font-medium animate-in fade-in zoom-in-95 duration-200">
                   {s}
                   <button
                     onClick={(e) => { e.stopPropagation(); removeSymptom(s); }}
-                    className="p-0.5 hover:bg-zinc-200 rounded-md transition-colors"
+                    className="p-1 hover:bg-zinc-200 rounded-md transition-colors"
                   >
-                    <X className="w-3 h-3" />
+                    <X className="w-4 h-4" />
                   </button>
                 </span>
               ))}
@@ -136,7 +135,7 @@ export default function HomePage() {
                   }
                 }}
                 placeholder={selectedSymptoms.length === 0 ? "Type a symptom like 'Headache'..." : "Add another..."}
-                className="flex-1 min-w-[120px] bg-transparent border-none outline-none text-lg text-gray-900 placeholder:text-gray-400 h-full"
+                className="flex-1 min-w-[120px] bg-transparent border-none outline-none text-lg text-gray-900 placeholder:text-gray-400 h-full py-1"
                 autoComplete="off"
               />
             </div>
@@ -152,7 +151,7 @@ export default function HomePage() {
           </div>
 
           {/* Autocomplete / Suggestions Dropdown */}
-          <div
+          <section
             className={`
               overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)]
               ${(isFocused || query) ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'}
@@ -164,103 +163,115 @@ export default function HomePage() {
 
               {query ? (
                 // Search Results
-                <div className="p-1 max-h-[300px] overflow-y-auto">
-                  <div className="text-xs font-semibold text-gray-400 px-3 py-2 uppercase tracking-wider">
+                <nav className="p-2 max-h-[300px] overflow-y-auto" aria-label="Search suggestions">
+                  <div className="text-xs font-semibold text-gray-400 px-4 py-2 uppercase tracking-wider mb-2">
                     Suggestions
                   </div>
-                  {filteredSymptoms.length > 0 ? filteredSymptoms.map(s => (
-                    <button
-                      key={s}
-                      onClick={() => toggleSymptom(s)}
-                      className="w-full flex items-center justify-between px-3 py-3 rounded-xl hover:bg-gray-50 text-left transition-colors group"
-                    >
-                      <span className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 group-hover:bg-white group-hover:shadow-sm transition-all">
-                          <PlusIcon />
-                        </div>
-                        <span className="font-medium text-gray-700 group-hover:text-gray-900">{s}</span>
-                      </span>
-                      <span className="text-gray-300 group-hover:text-zinc-400">
-                        <Command className="w-3.5 h-3.5" />
-                      </span>
-                    </button>
-                  )) : (
-                    <button
-                      onClick={() => toggleSymptom(query)}
-                      className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-50 text-left transition-colors"
-                    >
-                      <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500">
-                        <PlusIcon />
-                      </div>
-                      <span className="font-medium text-gray-700">Add "{query}"</span>
-                    </button>
-                  )}
-                </div>
+                  <ul className="space-y-2">
+                    {filteredSymptoms.length > 0 ? filteredSymptoms.map(s => (
+                      <li key={s}>
+                        <button
+                          onClick={() => toggleSymptom(s)}
+                          className="w-full flex items-center justify-between px-4 py-3 rounded-xl hover:bg-gray-50 text-left transition-colors group"
+                        >
+                          <span className="flex items-center gap-4">
+                            <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 group-hover:bg-white group-hover:shadow-sm transition-all">
+                              <PlusIcon />
+                            </div>
+                            <span className="font-medium text-gray-700 group-hover:text-gray-900">{s}</span>
+                          </span>
+                          <span className="text-gray-300 group-hover:text-zinc-400">
+                            <Command className="w-4 h-4" />
+                          </span>
+                        </button>
+                      </li>
+                    )) : (
+                      <li>
+                        <button
+                          onClick={() => toggleSymptom(query)}
+                          className="w-full flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-gray-50 text-left transition-colors"
+                        >
+                          <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500">
+                            <PlusIcon />
+                          </div>
+                          <span className="font-medium text-gray-700">Add "{query}"</span>
+                        </button>
+                      </li>
+                    )}
+                  </ul>
+                </nav>
               ) : (
                 // Default State (History & Trending)
-                <div className="p-1">
+                <div className="p-2">
                   {/* Recent Searches (Mocked) */}
-                  <div className="mb-2">
-                    <div className="text-xs font-semibold text-gray-400 px-3 py-2 uppercase tracking-wider">
+                  <nav className="mb-4" aria-label="Recent searches">
+                    <div className="text-xs font-semibold text-gray-400 px-4 py-2 uppercase tracking-wider mb-2">
                       Recent
                     </div>
-                    {RECENT_SEARCHES.map(s => (
-                      !selectedSymptoms.includes(s) && (
-                        <button
-                          key={s}
-                          onClick={() => toggleSymptom(s)}
-                          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 text-left transition-colors group"
-                        >
-                          <History className="w-4 h-4 text-gray-400 group-hover:text-gray-600" />
-                          <span className="font-medium text-gray-600 group-hover:text-gray-900">{s}</span>
-                        </button>
-                      )
-                    ))}
-                  </div>
-
-                  {/* Common Symptoms Grid */}
-                  <div className="mb-2">
-                    <div className="text-xs font-semibold text-gray-400 px-3 py-2 uppercase tracking-wider">
-                      Common Symptoms
-                    </div>
-                    <div className="flex flex-wrap gap-2 px-3 py-1">
-                      {ALL_SYMPTOMS.slice(0, 12).map(s => (
+                    <ul className="space-y-2">
+                      {RECENT_SEARCHES.map(s => (
                         !selectedSymptoms.includes(s) && (
-                          <button
-                            key={s}
-                            onClick={() => toggleSymptom(s)}
-                            className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-gray-50 text-gray-600 hover:bg-zinc-900 hover:text-white transition-all duration-200"
-                          >
-                            {s}
-                          </button>
+                          <li key={s}>
+                            <button
+                              onClick={() => toggleSymptom(s)}
+                              className="w-full flex items-center gap-4 px-4 py-2 rounded-xl hover:bg-gray-50 text-left transition-colors group"
+                            >
+                              <History className="w-4 h-4 text-gray-400 group-hover:text-gray-600" />
+                              <span className="font-medium text-gray-600 group-hover:text-gray-900">{s}</span>
+                            </button>
+                          </li>
                         )
                       ))}
+                    </ul>
+                  </nav>
+
+                  {/* Common Symptoms Grid */}
+                  <nav className="mb-4" aria-label="Common symptoms">
+                    <div className="text-xs font-semibold text-gray-400 px-4 py-2 uppercase tracking-wider mb-2">
+                      Common Symptoms
                     </div>
-                  </div>
+                    <ul className="flex flex-wrap gap-2 px-4 py-2">
+                      {ALL_SYMPTOMS.slice(0, 12).map(s => (
+                        !selectedSymptoms.includes(s) && (
+                          <li key={s}>
+                            <button
+                              onClick={() => toggleSymptom(s)}
+                              className="inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium bg-gray-50 text-gray-600 hover:bg-zinc-900 hover:text-white transition-all duration-200"
+                            >
+                              {s}
+                            </button>
+                          </li>
+                        )
+                      ))}
+                    </ul>
+                  </nav>
 
                   {/* Trending/Categories */}
-                  <div>
-                    <div className="text-xs font-semibold text-gray-400 px-3 py-2 uppercase tracking-wider">
+                  <nav aria-label="Trending symptoms">
+                    <div className="text-xs font-semibold text-gray-400 px-4 py-2 uppercase tracking-wider mb-2">
                       Trending Now
                     </div>
-                    {TRENDING_SYMPTOMS.map(item => (
-                      <button
-                        key={item.id}
-                        onClick={() => toggleSymptom(item.text)}
-                        className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-gray-50 text-left transition-colors group"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className={`w-2 h-2 rounded-full ${item.color.replace('text', 'bg')}`} />
-                          <span className="font-medium text-gray-700">{item.text}</span>
-                        </div>
-                        <TrendingUp className="w-3.5 h-3.5 text-gray-300 group-hover:text-gray-500" />
-                      </button>
-                    ))}
-                  </div>
+                    <ul className="space-y-2">
+                      {TRENDING_SYMPTOMS.map(item => (
+                        <li key={item.id}>
+                          <button
+                            onClick={() => toggleSymptom(item.text)}
+                            className="w-full flex items-center justify-between px-4 py-2 rounded-xl hover:bg-gray-50 text-left transition-colors group"
+                          >
+                            <div className="flex items-center gap-4">
+                              <div className={`w-2 h-2 rounded-full ${item.color.replace('text', 'bg')}`} />
+                              <span className="font-medium text-gray-700">{item.text}</span>
+                            </div>
+                            <TrendingUp className="w-4 h-4 text-gray-300 group-hover:text-gray-500" />
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </nav>
                 </div>
               )}
             </div>
-          </div>
+          </section>
         </div>
 
         {/* Footer Text */}
@@ -271,8 +282,8 @@ export default function HomePage() {
           </p>
         </div>
 
-      </div>
-    </div>
+      </section>
+    </main>
   )
 }
 
