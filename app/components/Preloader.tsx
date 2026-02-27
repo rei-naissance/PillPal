@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Pill } from 'lucide-react'
+import PillIcon from './PillIcon'
 
 export default function Preloader() {
   const [isLoading, setIsLoading] = useState(true)
@@ -51,8 +51,8 @@ export default function Preloader() {
             />
 
             {/* The icon container referencing the PillPal styling */}
-            <div className="relative z-10 w-20 h-20 rounded-3xl bg-zinc-900 shadow-2xl flex items-center justify-center text-white">
-              <Pill className="w-10 h-10" />
+            <div className="relative z-10 w-24 h-24 rounded-[1.75rem] bg-white border border-gray-100 shadow-2xl flex items-center justify-center">
+              <PillIcon className="w-16 h-16 drop-shadow-sm" />
             </div>
           </motion.div>
 

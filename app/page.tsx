@@ -15,12 +15,7 @@ import {
   Pill
 } from 'lucide-react'
 
-// Mock Data for "Trending" or "Categories"
-const TRENDING_SYMPTOMS = [
-  { id: 't1', text: 'Viral Fever', icon: ThermometerSun, color: 'text-orange-500', bg: 'bg-orange-50' },
-  { id: 't2', text: 'Seasonal Flu', icon: Activity, color: 'text-blue-500', bg: 'bg-blue-50' },
-  { id: 't3', text: 'Migraine', icon: Sparkles, color: 'text-purple-500', bg: 'bg-purple-50' },
-]
+const FALLBACK_TRENDING = ['Viral Fever', 'Seasonal Flu', 'Migraine']
 
 const RECENT_SEARCHES = [
   'Headache', 'Nausea'
@@ -36,10 +31,41 @@ const ALL_SYMPTOMS = [
 export default function HomePage() {
   const [query, setQuery] = useState('')
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([])
+  const [trendingSymptoms, setTrendingSymptoms] = useState<string[]>(FALLBACK_TRENDING)
   const [isFocused, setIsFocused] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const focusTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const router = useRouter()
+
+  useEffect(() => {
+    try {
+      const cached = localStorage.getItem('trending-symptoms-cache')
+      const time = localStorage.getItem('trending-symptoms-time')
+      const isExpired = time ? (Date.now() - parseInt(time)) > 12 * 60 * 60 * 1000 : true
+
+      if (cached && !isExpired) {
+        setTrendingSymptoms(JSON.parse(cached))
+        return
+      }
+
+      fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'trending' })
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.trending && Array.isArray(data.trending)) {
+            setTrendingSymptoms(data.trending)
+            localStorage.setItem('trending-symptoms-cache', JSON.stringify(data.trending))
+            localStorage.setItem('trending-symptoms-time', Date.now().toString())
+          }
+        })
+        .catch((e) => console.log('Silently failed trending fetch:', e))
+    } catch {
+      // Ignore local storage errors
+    }
+  }, [])
 
   // Filter symptoms based on query
   const filteredSymptoms = ALL_SYMPTOMS.filter(s =>
@@ -252,20 +278,23 @@ export default function HomePage() {
                       Trending Now
                     </div>
                     <ul className="space-y-2">
-                      {TRENDING_SYMPTOMS.map(item => (
-                        <li key={item.id}>
-                          <button
-                            onClick={() => toggleSymptom(item.text)}
-                            className="w-full flex items-center justify-between px-4 py-2 rounded-xl hover:bg-gray-50 text-left transition-colors group"
-                          >
-                            <div className="flex items-center gap-4">
-                              <div className={`w-2 h-2 rounded-full ${item.color.replace('text', 'bg')}`} />
-                              <span className="font-medium text-gray-700">{item.text}</span>
-                            </div>
-                            <TrendingUp className="w-4 h-4 text-gray-300 group-hover:text-gray-500" />
-                          </button>
-                        </li>
-                      ))}
+                      {trendingSymptoms.map((text, i) => {
+                        const colors = ['bg-orange-500', 'bg-blue-500', 'bg-emerald-500']
+                        return (
+                          <li key={`t${i}`}>
+                            <button
+                              onClick={() => toggleSymptom(text)}
+                              className="w-full flex items-center justify-between px-4 py-2 rounded-xl hover:bg-gray-50 text-left transition-colors group"
+                            >
+                              <div className="flex items-center gap-4">
+                                <div className={`w-2 h-2 rounded-full ${colors[i % colors.length]}`} />
+                                <span className="font-medium text-gray-700">{text}</span>
+                              </div>
+                              <TrendingUp className="w-4 h-4 text-gray-300 group-hover:text-gray-500" />
+                            </button>
+                          </li>
+                        )
+                      })}
                     </ul>
                   </nav>
                 </div>

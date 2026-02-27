@@ -23,6 +23,12 @@ const fetchGroqData = async (type: string, symptoms?: string[], disease?: string
     { "treatments": { "otc": ["med1"], "prescription": ["med1"], "home": ["remedy1"] } }
     Do not output any markdown formatting, explanations, or conversational text outside the JSON object.`
     userPrompt = `Disease: ${disease}`
+  } else if (type === 'trending') {
+    systemPrompt = `You are a medical AI. Suggest 3 trending or seasonal health symptoms people might be experiencing right now based on the current season or general common ailments.
+    You MUST respond with a valid JSON object matching exactly this schema:
+    { "trending": ["symptom 1", "symptom 2", "symptom 3"] }
+    Do not output any markdown formatting, explanations, or conversational text outside the JSON object.`
+    userPrompt = `What are 3 trending symptoms right now?`
   }
 
   const response = await fetch(GROQ_API_URL, {
@@ -67,8 +73,23 @@ const fetchGroqData = async (type: string, symptoms?: string[], disease?: string
 
 export async function POST(request: NextRequest) {
   try {
-    const { symptoms, type = 'diseases', disease } = await request.json()
+    const body = await request.json()
+    const { symptoms, type = 'diseases', disease } = body
 
+    // 1. Enterprise Security: Validate and sanitize payload limits to prevent token-draining / DDOS
+    if (type === 'diseases') {
+      if (symptoms && (!Array.isArray(symptoms) || symptoms.length > 25 || symptoms.join('').length > 500)) {
+        return NextResponse.json({ error: 'Symptoms payload too large or invalid structure.' }, { status: 400 })
+      }
+    } else if (type === 'treatments') {
+      if (typeof disease !== 'string' || disease.length > 100 || disease.trim().length === 0) {
+        return NextResponse.json({ error: 'Disease parameter must be a valid, constrained string.' }, { status: 400 })
+      }
+    } else if (type !== 'trending') {
+      return NextResponse.json({ error: 'Invalid analysis type requested.' }, { status: 400 })
+    }
+
+    // 2. Auth Verification: Validate environment configuration
     if (!process.env.GROQ_API_KEY) {
       return NextResponse.json(
         { error: 'Groq API key not configured' },
@@ -90,7 +111,7 @@ export async function POST(request: NextRequest) {
       const result = await getCachedDiseases()
       return NextResponse.json({ diseases: result.diseases || [] })
 
-    } else {
+    } else if (type === 'treatments') {
       const cacheKeyStr = `treatments-${disease}`
       const safeKey = cacheKeyStr.replace(/[^a-zA-Z0-9-]/g, '').toLowerCase()
 
@@ -102,6 +123,17 @@ export async function POST(request: NextRequest) {
 
       const result = await getCachedTreatments()
       return NextResponse.json({ treatments: result.treatments || { otc: [], prescription: [], home: [] } })
+    } else if (type === 'trending') {
+      const safeKey = 'trending-symptoms-daily'
+
+      const getCachedTrending = unstable_cache(
+        async () => fetchGroqData(type),
+        [safeKey],
+        { tags: [safeKey], revalidate: 86400 } // Revalidate cache every 24 hours
+      )
+
+      const result = await getCachedTrending()
+      return NextResponse.json({ trending: result.trending || ['Fever', 'Cough', 'Headache'] })
     }
 
   } catch (error) {

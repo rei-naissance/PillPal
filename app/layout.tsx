@@ -3,8 +3,32 @@ import './globals.css'
 import Preloader from './components/Preloader'
 
 export const metadata: Metadata = {
-  title: 'PillPal - Healthcare Assistant',
-  description: 'AI-powered healthcare assistant for symptom analysis and treatment suggestions',
+  title: {
+    template: '%s | PillPal',
+    default: 'PillPal - AI Medical Diagnostic Assistant',
+  },
+  description: 'PillPal provides instantly analyzed medical symptoms to condition correlations using highly accurate LLM reasoning. Do not use for medical emergencies.',
+  keywords: ['healthcare', 'AI diagnosis', 'medical symptoms', 'symptom checker', 'PillPal', 'treatments'],
+  authors: [{ name: 'PillPal Medical AI System' }],
+  robots: 'index, follow',
+  openGraph: {
+    type: 'website',
+    url: 'https://pillpal.example.com',
+    title: 'PillPal - Free Artificial Intelligence Diagnostic Assistant',
+    description: 'Instantly diagnose your obscure medical symptoms and generate a comprehensive treatment plan using Llama-3 70B.',
+    siteName: 'PillPal',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'PillPal - AI Healthcare Assistant',
+  }
+}
+
+export const viewport = {
+  themeColor: '#10b981', // Emerald 500
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1, // Prevent iOS zoom on inputs
 }
 
 export default function RootLayout({
