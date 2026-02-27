@@ -12,7 +12,7 @@ export default function ResultsPage() {
   const router = useRouter()
 
   useEffect(() => {
-    const storedSymptoms = sessionStorage.getItem('symptoms')
+    const storedSymptoms = localStorage.getItem('symptoms')
     if (!storedSymptoms) {
       router.push('/')
       return
@@ -22,7 +22,7 @@ export default function ResultsPage() {
     setSymptoms(symptomsArray)
 
     const cacheKey = `diseaseResults_${[...symptomsArray].sort().join(',')}`
-    const cachedResults = sessionStorage.getItem(cacheKey)
+    const cachedResults = localStorage.getItem(cacheKey)
     if (cachedResults) {
       // Use cached results instead of calling API again
       const cachedDiseases = JSON.parse(cachedResults)
@@ -36,9 +36,9 @@ export default function ResultsPage() {
   }, [router])
 
   const preloadTreatmentData = async (diseases: string[]) => {
-    // Preload treatment data for all diseases in the background
-    const treatmentPromises = diseases.map(async (disease) => {
-      if (sessionStorage.getItem(`treatments_${disease}`)) {
+    // Preload treatment data for top 2 diseases in the background to avoid rate limits
+    const treatmentPromises = diseases.slice(0, 2).map(async (disease) => {
+      if (localStorage.getItem(`treatments_${disease}`)) {
         return Promise.resolve() // Skip API call if already cached
       }
       try {
@@ -57,7 +57,7 @@ export default function ResultsPage() {
           const data = await response.json()
           if (data.treatments) {
             // Cache treatment data for this disease
-            sessionStorage.setItem(`treatments_${disease}`, JSON.stringify(data.treatments))
+            localStorage.setItem(`treatments_${disease}`, JSON.stringify(data.treatments))
           }
         }
       } catch (error) {
@@ -67,7 +67,10 @@ export default function ResultsPage() {
     })
 
     // Execute all preload requests in parallel (don't await - run in background)
-    Promise.allSettled(treatmentPromises)
+    // Staggered by 800ms so UI animations render smoothly first
+    setTimeout(() => {
+      Promise.allSettled(treatmentPromises)
+    }, 800)
   }
 
   const analyzeSymptons = async (symptoms: string[], cacheKey: string) => {
@@ -99,9 +102,9 @@ export default function ResultsPage() {
       const diseases = data.diseases || []
       setDiseases(diseases)
       // Cache the results for future navigation mapped to these exact symptoms
-      sessionStorage.setItem(cacheKey, JSON.stringify(diseases))
+      localStorage.setItem(cacheKey, JSON.stringify(diseases))
 
-      // Preload treatment data for all diseases
+      // Preload treatment data
       preloadTreatmentData(diseases)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
@@ -116,7 +119,7 @@ export default function ResultsPage() {
       ]
       setDiseases(fallbackDiseases)
       // Cache the fallback results too
-      sessionStorage.setItem(cacheKey, JSON.stringify(fallbackDiseases))
+      localStorage.setItem(cacheKey, JSON.stringify(fallbackDiseases))
 
       // Preload treatment data for fallback diseases too
       preloadTreatmentData(fallbackDiseases)
@@ -126,7 +129,7 @@ export default function ResultsPage() {
   }
 
   const handleDiseaseClick = (disease: string) => {
-    sessionStorage.setItem('selectedDisease', disease)
+    localStorage.setItem('selectedDisease', disease)
     router.push(`/treatment/${encodeURIComponent(disease)}`)
   }
 
@@ -192,7 +195,7 @@ export default function ResultsPage() {
               <span className="w-8 h-8 rounded-xl bg-green-100 text-green-600 flex items-center justify-center text-sm shadow-sm">✓</span>
               Possible Matches
             </h2>
-            <ul className="flex-1 lg:overflow-y-auto lg:pr-4 lg:-mr-4 pb-2 space-y-4" style={{ scrollbarWidth: 'thin', scrollbarColor: '#E5E7EB transparent' }} role="list">
+            <ul className="flex-1 overflow-y-auto pr-4 -mr-4 pb-6 space-y-4 max-h-[400px] md:max-h-[500px]" style={{ scrollbarWidth: 'thin', scrollbarColor: '#E5E7EB transparent', maskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)' }} role="list">
               {diseases.map((disease, index) => (
                 <li key={index} className="list-none">
                   <button

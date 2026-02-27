@@ -33,7 +33,7 @@ export default function TreatmentPage() {
     setDisease(decodedDisease)
 
     // Check if we have cached treatment data first
-    const cachedTreatments = sessionStorage.getItem(`treatments_${decodedDisease}`)
+    const cachedTreatments = localStorage.getItem(`treatments_${decodedDisease}`)
     if (cachedTreatments) {
       // Use cached data for instant loading
       const treatmentData = JSON.parse(cachedTreatments)
@@ -78,7 +78,7 @@ export default function TreatmentPage() {
       }
       setTreatments(treatmentData)
       // Cache the treatment data for future instant access
-      sessionStorage.setItem(`treatments_${diseaseName}`, JSON.stringify(treatmentData))
+      localStorage.setItem(`treatments_${diseaseName}`, JSON.stringify(treatmentData))
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
       // Fallback treatments for demo purposes
@@ -112,7 +112,7 @@ export default function TreatmentPage() {
       }
       setTreatments(fallbackTreatments)
       // Cache the fallback treatments too
-      sessionStorage.setItem(`treatments_${diseaseName}`, JSON.stringify(fallbackTreatments))
+      localStorage.setItem(`treatments_${diseaseName}`, JSON.stringify(fallbackTreatments))
     } finally {
       setIsLoading(false)
     }
@@ -208,7 +208,7 @@ export default function TreatmentPage() {
             </div>
           </header>
 
-          <ul className="space-y-4 flex-1 lg:overflow-y-auto lg:pr-4 lg:-mr-2 lg:max-h-[500px]" style={{ scrollbarWidth: 'thin', scrollbarColor: '#E5E7EB transparent' }}>
+          <ul className="space-y-4 flex-1 overflow-y-auto pr-4 -mr-2 max-h-[300px] md:max-h-[400px] lg:max-h-[500px] pb-6" style={{ scrollbarWidth: 'thin', scrollbarColor: '#E5E7EB transparent', maskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)' }}>
             {treatments.otc.length > 0 ? (
               treatments.otc.map((medication, index) => (
                 <li key={index} className="flex items-start gap-4 p-3 rounded-2xl hover:bg-gray-50 transition-colors">
@@ -247,7 +247,7 @@ export default function TreatmentPage() {
             </div>
           </header>
 
-          <ul className="space-y-4 flex-1 lg:overflow-y-auto lg:pr-4 lg:-mr-2 lg:max-h-[500px]" style={{ scrollbarWidth: 'thin', scrollbarColor: '#E5E7EB transparent' }}>
+          <ul className="space-y-4 flex-1 overflow-y-auto pr-4 -mr-2 max-h-[300px] md:max-h-[400px] lg:max-h-[500px] pb-6" style={{ scrollbarWidth: 'thin', scrollbarColor: '#E5E7EB transparent', maskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)' }}>
             {treatments.prescription.length > 0 ? (
               treatments.prescription.map((medication, index) => (
                 <li key={index} className="flex items-start gap-4 p-3 rounded-2xl hover:bg-gray-50 transition-colors">
@@ -286,7 +286,7 @@ export default function TreatmentPage() {
             </div>
           </header>
 
-          <ul className="space-y-4 flex-1 lg:overflow-y-auto lg:pr-4 lg:-mr-2 lg:max-h-[500px]" style={{ scrollbarWidth: 'thin', scrollbarColor: '#E5E7EB transparent' }}>
+          <ul className="space-y-4 flex-1 overflow-y-auto pr-4 -mr-2 max-h-[300px] md:max-h-[400px] lg:max-h-[500px] pb-6" style={{ scrollbarWidth: 'thin', scrollbarColor: '#E5E7EB transparent', maskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)' }}>
             {treatments.home.length > 0 ? (
               treatments.home.map((remedy, index) => (
                 <li key={index} className="flex items-start gap-4 p-3 rounded-2xl hover:bg-gray-50 transition-colors">
