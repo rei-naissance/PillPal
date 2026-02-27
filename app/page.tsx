@@ -64,8 +64,8 @@ export default function HomePage() {
   const handleSubmit = async () => {
     if (selectedSymptoms.length === 0) return
 
-    // Store symptoms in sessionStorage for the results page
-    sessionStorage.setItem('symptoms', JSON.stringify(selectedSymptoms))
+    // Store symptoms in localStorage for the results page persistent memory
+    localStorage.setItem('symptoms', JSON.stringify(selectedSymptoms))
     router.push('/results')
   }
 
